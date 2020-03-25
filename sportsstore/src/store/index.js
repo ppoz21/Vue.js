@@ -7,12 +7,12 @@ import AuthModule from  "./auth";
 
 Vue.use(Vuex);
 
-const baseUrl = "http://localhost:3500";
+const baseUrl = "/api";
 const productsUrl = `${baseUrl}/products`;
 const categoriesUrl = `${baseUrl}/categories`;
 
 export default new Vuex.Store({
-    strict: true,
+    strict: false,
     modules:  { cart: CartModule, orders: OrdersModule, auth: AuthModule},
     state: {
         categoriesData: [],
@@ -29,7 +29,10 @@ export default new Vuex.Store({
             return state.pages[state.currentPage];
         },
         pageCount: (state) => state.serverPageCount,
-        categories: state => ["All", ...state.categoriesData]
+        categories: state => ["All", ...state.categoriesData],
+        productById:(state) => (id) => {
+            return state.pages[state.currentPage].find(p => p.id == id);
+        }
     },
     mutations: {
         _setCurrentPage(state, page) {
@@ -66,6 +69,14 @@ export default new Vuex.Store({
             state.searchTerm = term;
             state.currentPage = 1;
         },
+        _addProduct(state, product) {
+            state.pages[state.currentPage].unshift(product);
+        },
+        _updateProduct(state, product) {
+            let page = state.pages[state.currentPage];
+            let index = page.findIndex(p => p.id == product.id);
+            Vue.set(page, index, product)
+        }
     },
     actions: {
         async getData(context) {
@@ -114,6 +125,20 @@ export default new Vuex.Store({
             context.commit("setSearchTerm", "");
             context.commit("clearPages");
             context.dispatch("getPage", 2);
+        },
+        async addProduct(context, product) {
+            let data = (await context.getters.authenticatedAxios.post(productsUrl, product)).data;
+            product.id = data.id;
+            this.commit("_addProduct", product);
+        },
+        async removeProduct(context, product) {
+            await context.getters.authenticatedAxios.delete(`${productsUrl}/${product.id}`, product);
+            context.commit("clearPages");
+            context.dispatch("getPages", 1);
+        },
+        async updateProduct(context, product) {
+            await context.getters.authenticatedAxios.put(`${productsUrl}/${product.id}`, product);
+            this.commit("_updateProduct", product);
         }
     }
 })

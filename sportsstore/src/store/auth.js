@@ -1,5 +1,5 @@
 import Axios from "axios";
-const loginURL = "http://localhost:3500/login";
+const loginURL = "/api/login";
 export default {
     state: {
         authenticated: false,

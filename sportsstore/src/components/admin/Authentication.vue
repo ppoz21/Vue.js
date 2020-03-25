@@ -7,7 +7,7 @@
             Uwierzytelnianie nie powiodło się. Spróbuj ponownie.
         </h4>
         <div class="form-group">
-            <label>Nazwa uźytkownika:</label>
+            <label>Nazwa użytkownika:</label>
             <input class="form-control" v-model="$v.username.$model">
             <validation-error v-bind:validation="$v.username" />
         </div>
@@ -30,8 +30,8 @@
         components: { ValidationError },
         data: function() {
             return {
-                username: "admin",
-                password: "secret",
+                username: null,
+                password: null,
                 showFailureMessage: false,
             }
         },

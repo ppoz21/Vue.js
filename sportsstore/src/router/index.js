@@ -4,10 +4,18 @@ import Store from "../components/Store";
 import ShoppingCart from "../components/ShopingCart";
 import Checkout from "../components/Checkout";
 import OrderThanks from "../components/OrderThanks";
-import Authentication from "../components/admin/Authentication";
-import Admin from "../components/admin/Admin";
-import ProductAdmin from "../components/admin/ProductAdmin";
-import OrderAdmin from "../components/admin/OrderAdmin";
+
+const Authentication = () =>
+    import(/* webpackChunkName: "admin" */ "../components/admin/Authentication");
+const Admin = () =>
+    import(/* webpackChunkName: "admin" */ "../components/admin/Admin");
+const ProductAdmin = () =>
+    import(/* webpackChunkName: "admin" */ "../components/admin/ProductAdmin");
+const OrderAdmin = () =>
+    import(/* webpackChunkName: "admin" */ "../components/admin/OrderAdmin");
+const ProductEditor = () =>
+    import(/* webpackChunkName: "admin" */ "../components/admin/ProductEditor");
+
 import dataStore from "../store";
 
 Vue.use(VueRouter);
@@ -29,6 +37,7 @@ export default new VueRouter({
                 }
             },
             children: [
+                {path: "products/:op(create|edit)/:id(\\d+)?", component: ProductEditor},
                 {path: "products", component: ProductAdmin},
                 {path: "orders", component: OrderAdmin},
                 {path: "", redirect: "/admin/products"}
